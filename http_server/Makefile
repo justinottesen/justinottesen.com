@@ -5,7 +5,7 @@ CXX := clang++
 LD := clang++
 
 CFLAGS := 
-CXXFLAGS := -std=c++17
+CXXFLAGS := -std=c++20
 CPPFLAGS := -Wall -Wextra -Werror -g
 DEPFLAGS := -MMD -MP
 LDFLAGS :=

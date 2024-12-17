@@ -1,3 +1,7 @@
-#include <iostream>
+#include "Logger.h"
 
-int main() { std::cout << "Hello World!" << std::endl; }
+int main() {
+  log::addConsole(TRACE);
+
+  LOG(INFO) << "Hello World!";
+}
