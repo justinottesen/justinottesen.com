@@ -1,3 +1,5 @@
+#pragma once
+
 #include <atomic>
 #include <filesystem>
 #include <fstream>
@@ -176,7 +178,27 @@ class Line {
    * Forward arguments to the buffer to be printed
    */
   template <typename T> Line& operator<<(const T& obj) {
-    m_stream << obj;
+    // String-like types should print normally
+    if constexpr (std::is_convertible_v<T, std::string_view>) {
+      m_stream << obj;
+    } 
+    // Path types should print normally
+    else if constexpr (std::is_same_v<T, std::filesystem::path>) {
+      m_stream << obj;
+    } 
+    // Containers should print contents
+    else if constexpr (requires(T t) { t.begin(); t.end(); }) {
+      m_stream << "{ ";
+      for (auto it = obj.begin(); it != obj.end(); it++) {
+        if (it != obj.begin()) { m_stream << ", "; }
+        (*this) << *it;
+      }
+      m_stream << " }";
+    }
+    // Other types just forward to the stream operator
+    else {
+      m_stream << obj;
+    }
     return *this;
   }
 

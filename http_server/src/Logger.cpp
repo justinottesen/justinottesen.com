@@ -94,18 +94,23 @@ Manager::Init::~Init() {
 }
 
 void Manager::addWorker(const std::filesystem::path& path, Level level) {
-  const std::lock_guard<std::mutex> lock(m_mutex);
-  for (Worker& worker : m_workers) {
-    if (worker.path() == path) {
-      worker.setLevel(level);
-      return;
+  {
+    const std::lock_guard<std::mutex> lock(m_mutex);
+    for (Worker& worker : m_workers) {
+      if (worker.path() == path) {
+        worker.setLevel(level);
+        return;
+      }
     }
+    const Worker& new_worker = m_workers.emplace_back(path, level);
+    if (!new_worker.good()) { m_workers.pop_back(); }
   }
-  const Worker& new_worker = m_workers.emplace_back(path, level);
-  if (!new_worker.good()) { m_workers.pop_back(); }
+  LOG(DEBUG) << "Added log worker at " << (path.empty() ? "console" : path)
+            << " (level: " << levelStr(level) << ")";
 }
 
 void Manager::removeWorker(const std::filesystem::path& path) {
+  LOG(DEBUG) << "Removing log worker at " << (path.empty() ? "console" : path);
   const std::lock_guard<std::mutex> lock(m_mutex);
   for (auto itr = m_workers.begin(); itr != m_workers.end(); ++itr) {
     if (itr->path() == path) {
