@@ -127,13 +127,16 @@ footer a {
   width: 16px;
   height: 16px;
   background-color: currentColor;
+  -webkit-mask-size: contain;
   mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
+  -webkit-mask-position: center;
   mask-position: center;
 }
 
-.icon-github  { mask-image: url('/assets/img/github.svg');   }
-.icon-linkedin { mask-image: url('/assets/img/linkedin.svg'); }
+.icon-github   { -webkit-mask-image: url('/assets/img/github.svg');   mask-image: url('/assets/img/github.svg');   }
+.icon-linkedin { -webkit-mask-image: url('/assets/img/linkedin.svg'); mask-image: url('/assets/img/linkedin.svg'); }
 
 footer a:hover {
   color: #111827;
