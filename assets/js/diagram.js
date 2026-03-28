@@ -33,8 +33,9 @@ async function loadDiagram() {
   // Scale to container width; height follows from the viewBox aspect ratio
   svg.removeAttribute('width');
   svg.removeAttribute('height');
-  svg.style.width   = '100%';
-  svg.style.display = 'block';
+  svg.style.width       = '100%';
+  svg.style.display     = 'block';
+  svg.style.colorScheme = 'light';
 
   // draw.io crops tightly to content - expand the viewBox to add breathing room
   const [x, y, w, h] = svg.getAttribute('viewBox').split(' ').map(Number);
@@ -99,6 +100,11 @@ function setupPanZoom(svg) {
   const [vbX, vbY, vbW, vbH] = svg.getAttribute('viewBox').split(' ').map(Number);
   const state = { scale: 1, tx: 0, ty: 0 };
   let drag = null;
+  let lastPinchDist = null;
+
+  // Prevent the browser from handling touch gestures (scroll, pinch-zoom) on
+  // the SVG so our own handlers receive them uninterrupted
+  svg.style.touchAction = 'none';
 
   // Wrap all SVG content in a viewport group so transforms don't affect the
   // viewBox coordinate system itself
@@ -121,20 +127,24 @@ function setupPanZoom(svg) {
     };
   }
 
-  // Zoom toward the cursor
-  svg.addEventListener('wheel', e => {
-    e.preventDefault();
-    const { x, y } = toVB(e.clientX, e.clientY);
-    const factor   = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.max(0.3, Math.min(5, state.scale * factor));
-    const k        = newScale / state.scale;
+  function applyZoom(factor, pivotX, pivotY) {
+    const { x, y } = toVB(pivotX, pivotY);
+    const newScale  = Math.max(0.3, Math.min(5, state.scale * factor));
+    const k         = newScale / state.scale;
     state.tx    = x - (x - state.tx) * k;
     state.ty    = y - (y - state.ty) * k;
     state.scale = newScale;
     applyTransform();
+  }
+
+  // Zoom toward the cursor
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    applyZoom(e.deltaY > 0 ? 0.9 : 1.1, e.clientX, e.clientY);
   }, { passive: false });
 
-  // Drag to pan
+  // -- Mouse drag to pan -------------------------------------------------------
+
   svg.addEventListener('mousedown', e => {
     if (e.button !== 0) return;
     drag = { startX: e.clientX, startY: e.clientY, tx: state.tx, ty: state.ty, moved: false };
@@ -161,6 +171,53 @@ function setupPanZoom(svg) {
     didDrag = drag?.moved ?? false;
     drag    = null;
     svg.style.cursor = '';
+  });
+
+  // -- Touch: single-finger pan, two-finger pinch-zoom ------------------------
+
+  svg.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      drag = { startX: t.clientX, startY: t.clientY, tx: state.tx, ty: state.ty, moved: false };
+      lastPinchDist = null;
+    } else if (e.touches.length === 2) {
+      drag = null;
+      lastPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && drag) {
+      const t  = e.touches[0];
+      const r  = svg.getBoundingClientRect();
+      const dx = (t.clientX - drag.startX) / r.width  * vbW;
+      const dy = (t.clientY - drag.startY) / r.height * vbH;
+      if (!drag.moved && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) drag.moved = true;
+      if (drag.moved) {
+        state.tx = drag.tx + dx;
+        state.ty = drag.ty + dy;
+        applyTransform();
+      }
+    } else if (e.touches.length === 2 && lastPinchDist !== null) {
+      const dist  = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+      const midX  = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY  = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      applyZoom(dist / lastPinchDist, midX, midY);
+      lastPinchDist = dist;
+    }
+  }, { passive: false });
+
+  svg.addEventListener('touchend', () => {
+    didDrag       = drag?.moved ?? false;
+    drag          = null;
+    lastPinchDist = null;
   });
 
   // Double-click to reset view
