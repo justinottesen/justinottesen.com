@@ -17,6 +17,35 @@ main {
   padding: 2.5rem 1.5rem;
 }
 
+/* -- Nav ------------------------------------------------------- */
+
+nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 2.5rem;
+}
+
+nav a {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 0.9rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+nav a:hover {
+  color: #111827;
+}
+
+nav a[aria-current="page"] {
+  color: #111827;
+  border-bottom-color: #111827;
+}
+
+/* -- Page content ---------------------------------------------- */
+
 section {
   margin-bottom: 3rem;
 }
