@@ -5,7 +5,7 @@
 // wrapper, which produces a data-cell-id attribute in the SVG output.
 //
 // data/architecture.json holds metadata (description, category, links) keyed
-// by those same ids. This file only handles wiring — layout lives in the SVG,
+// by those same ids. This file only handles wiring - layout lives in the SVG,
 // data lives in the JSON.
 
 const CATEGORIES = {
@@ -36,7 +36,7 @@ async function loadDiagram() {
   svg.style.width   = '100%';
   svg.style.display = 'block';
 
-  // draw.io crops tightly to content — expand the viewBox to add breathing room
+  // draw.io crops tightly to content - expand the viewBox to add breathing room
   const [x, y, w, h] = svg.getAttribute('viewBox').split(' ').map(Number);
   svg.setAttribute('viewBox', `${x - PADDING} ${y - PADDING} ${w + PADDING * 2} ${h + PADDING * 2}`);
 
