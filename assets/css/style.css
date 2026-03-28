@@ -22,8 +22,22 @@ main {
 nav {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   margin-bottom: 2.5rem;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  touch-action: pan-x;
+  background:
+    linear-gradient(to right, white, white)      left  / 20px 100% no-repeat local,
+    linear-gradient(to left,  white, white)      right / 20px 100% no-repeat local,
+    linear-gradient(to right, rgba(0,0,0,0.08), transparent) left  / 20px 100% no-repeat scroll,
+    linear-gradient(to left,  rgba(0,0,0,0.08), transparent) right / 20px 100% no-repeat scroll,
+    white;
+}
+
+nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 nav a {
@@ -36,7 +50,8 @@ nav a {
 }
 
 nav a:hover {
-  color: #111827;
+  color: #374151;
+  border-bottom-color: #374151;
 }
 
 nav a[aria-current="page"] {
