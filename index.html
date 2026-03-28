@@ -3,9 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>justinottesen.com</title>
+  <title>Justin Ottesen</title>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
+  <main>
+    <section class="intro">
+      <h1>Justin Ottesen</h1>
+      <p>
+        Software engineer at <a href="https://www.nasuni.com" target="_blank" rel="noopener noreferrer">Nasuni</a>
+        on the Data Path team, working on UniFS: a cloud-native global file system
+        that backs distributed edge appliances with object storage. Day-to-day:
+        data propagation & caching across sites, synchronized global access & locking, and
+        performance at scale.
+      </p>
+    </section>
+
+    <section class="about-site">
+      <h2>About this site</h2>
+      <p>
+        This site doesn't just display my portfolio, <b>it is the portfolio</b>.
+        Its architecture, hosting, and implementation are documented here and will
+        evolve over time as I build, migrate, and replace components. Click any node
+        in the diagram below for more information.
+      </p>
+    </section>
+
+    <section class="architecture">
+      <h2>Architecture</h2>
+
+      <div class="diagram-legend" id="diagram-legend">
+        <!-- populated by diagram.js -->
+      </div>
+
+      <div id="diagram-container">
+        <!-- SVG injected by diagram.js from assets/img/architecture.svg -->
+      </div>
+
+      <div id="node-detail" class="hidden">
+        <div class="detail-header">
+          <h3 id="detail-label"></h3>
+          <span id="detail-category"></span>
+          <button id="detail-close" onclick="document.getElementById('node-detail').classList.add('hidden')">✕</button>
+        </div>
+        <p id="detail-description"></p>
+        <div id="detail-links"></div>
+      </div>
+    </section>
+
+  </main>
+  <script src="assets/js/diagram.js"></script>
 </body>
 </html>

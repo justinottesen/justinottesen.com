@@ -1,0 +1,20 @@
+{
+  "client": {
+    "label": "Client",
+    "category": "external-dependency",
+    "description": "The end user's browser. Makes HTTPS requests to justinottesen.com.",
+    "links": []
+  },
+  "github-pages": {
+    "label": "GitHub Pages",
+    "category": "external-dependency",
+    "description": "Current origin. Hosts and serves the static site files directly. Free, zero-config, and sufficient as a starting point. Will be retired once the hosted server is ready.",
+    "links": [{ "label": "pages.github.com", "url": "https://pages.github.com" }]
+  },
+  "static-site": {
+    "label": "Static Site",
+    "category": "my-own",
+    "description": "Plain HTML, CSS, and vanilla JS. No build step, no framework. Content is driven from structured data files (JSON). The site you're looking at right now.",
+    "links": [{ "label": "github.com/justinottesen/justinottesen.com", "url": "https://github.com/justinottesen/justinottesen.com" }]
+  }
+}
