@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setting Up Cloudflare and AWS | Justin Ottesen</title>
+  <meta name="description" content="Moving off GitHub Pages - setting up Cloudflare as a reverse proxy and an EC2 instance on AWS.">
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <main>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/portfolio">Portfolio</a>
+      <a href="/experience">Experience</a>
+      <a href="/devlog">DevLog</a>
+      <a href="/about">About</a>
+    </nav>
+    <article class="post">
+      <header class="post-header">
+        <h1>Setting Up Cloudflare and AWS</h1>
+        <time datetime="2026-03-29">March 29, 2026</time>
+      </header>
+
+      <section>
+        <p>
+          This site is currently hosted on GitHub Pages, which is free and requires zero
+          configuration. That's great for getting started, but the plan has always been to
+          migrate to a self-hosted server - both because I want the control, and because
+          the server itself is part of what this site is documenting.
+        </p>
+        <p>
+          This post covers the first steps toward that: getting Cloudflare set up as a
+          reverse proxy and spinning up an EC2 instance on AWS to eventually replace
+          GitHub Pages as the origin.
+        </p>
+      </section>
+
+      <section>
+        <h2>Cloudflare</h2>
+        <p>
+          The plan is to put Cloudflare in front of everything. It acts as a reverse
+          proxy - all traffic hits Cloudflare's edge first, which handles DDoS protection,
+          TLS termination, and caching before forwarding legitimate requests to the origin.
+          The origin's real IP stays hidden, and only Cloudflare's IP ranges are allowed
+          through the firewall.
+        </p>
+        <p>
+          I transferred the domain to Cloudflare so everything lives in one place. Cloudflare
+          also takes over as the authoritative DNS provider, which is how the proxying works -
+          DNS resolves to Cloudflare's shared edge IPs rather than directly to the origin.
+        </p>
+      </section>
+
+      <section>
+        <h2>AWS EC2</h2>
+        <p>
+          For compute I went with an ARM t4g.micro on Ubuntu 24.04. ARM (AWS Graviton)
+          is cheaper than equivalent x86 instances and my server will be compiled for
+          ARM via GitHub Actions, so there's no mismatch. t4g.micro is free tier eligible
+          and more than sufficient for a personal site.
+        </p>
+        <p>
+          Security setup: an Elastic IP for a fixed public address, and a security group
+          that allows SSH on port 22 (key pair only) and will eventually allow HTTP/HTTPS
+          restricted to Cloudflare's published IP ranges. The origin is never directly
+          reachable from the public internet for web traffic.
+        </p>
+        <p>
+          As a quick sanity check, I cloned the site repo onto the instance and served
+          it with Python's built-in HTTP server, pointed the Cloudflare A records at the
+          Elastic IP, and verified the site loaded correctly end-to-end through the proxy.
+          It worked. GitHub Pages is still the actual origin for now while I build out
+          the real server.
+        </p>
+      </section>
+
+      <section>
+        <h2>Next Steps</h2>
+        <p>
+          The infrastructure is in place. What's left is the server itself - an HTTP
+          server written in C++ that will handle routing, serve static files, and
+          eventually support a deployment webhook so GitHub Actions can trigger a binary
+          swap on push. That's the next thing to build.
+        </p>
+      </section>
+    </article>
+  </main>
+  <footer>
+    <a href="https://github.com/justinottesen" target="_blank" rel="noopener noreferrer">
+      <span class="icon icon-github" aria-hidden="true"></span>
+      GitHub
+    </a>
+    <a href="https://www.linkedin.com/in/justinottesen" target="_blank" rel="noopener noreferrer">
+      <span class="icon icon-linkedin" aria-hidden="true"></span>
+      LinkedIn
+    </a>
+  </footer>
+  <script src="/assets/js/nav.js"></script>
+</body>
+</html>
