@@ -150,7 +150,7 @@ footer a:hover {
   gap: 0;
 }
 
-.post-preview a {
+.post-link {
   display: flex;
   align-items: baseline;
   gap: 1rem;
@@ -160,7 +160,7 @@ footer a:hover {
   color: inherit;
 }
 
-.post-preview a:hover h2 {
+.post-link:hover .post-title {
   color: #111827;
 }
 
