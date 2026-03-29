@@ -164,13 +164,10 @@ footer a:hover {
   color: #111827;
 }
 
-.post-preview h2 {
+.post-title {
   font-size: 1rem;
   font-weight: 600;
   color: #374151;
-  text-transform: none;
-  letter-spacing: 0;
-  margin: 0;
 }
 
 .post-preview time {
